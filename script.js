@@ -1,4 +1,4 @@
-L.mapbox.accessToken = 'pk.eyJ1IjoibHl6aWRpYW1vbmQiLCJhIjoiRkh4OW9layJ9.P2o48WlCqjhGmqoFJl3C_A';
+L.mapbox.accessToken = 'pk.eyJ1IjoiZ2x3IiwiYSI6IjdHTVp3eWMifQ.TXIsy6c3KnbqnUAeBawVsA'
 
 //add color to trails by user numbers
 function getColor(d) {
@@ -21,22 +21,51 @@ function style(feature) {
     };
 }
 
-// set map view
-var map = L.mapbox.map('map', 'mapbox.light')
-    .setView([41.87, -87.8], 11);
+// set map
+var map = L.mapbox.map('map', null, {
+    'center':[41.87, -87.8],
+    'zoom': 10
+  });
+
+//add basemap
+L.mapbox.styleLayer('mapbox://styles/glw/cj09rk1cm00362rpfhkjxx7k0')
+    .addTo(map);
 
 // add hashed url
-var hash = L.hash(map);
+//var hash = L.hash(map);
 
-// add geojson data
-var myLayer = $.getJSON('data/yr2014_strava.geojson', function(data){
-    L.geoJson(data, {
-      style: style,
-      onEachFeature: function (feature, layer) {
-      layer.bindPopup('<strong>' + layer.feature.properties.osm_name + '</strong>' + '</br>' + '2014 Total Athelete Count: ' + layer.feature.properties.total_athlete_both, { closeButton: false });
-      }
-     }).addTo(map);
- });
+//add strava trails 2014
+var fileurl = 'data/yr2014_strava.topojson'
+
+var geojson = new L.geoJson(null, {
+  'style': style,
+  onEachFeature: function (feature, layer) {
+  layer.bindPopup('<strong>' + layer.feature.properties.osm_name + '</strong>' +
+  '</br>' + '2014 Total Pedestrian Count: ' + layer.feature.properties.total_athlete_ped + '</br>' + '2014 Total Rider Count: ' + layer.feature.properties.total_athlete_ride + '</br>' + '2014 Total Athelete Count: ' + layer.feature.properties.total_athlete_both, { closeButton: false });
+  }
+});
+
+var strava14 = omnivore.topojson(fileurl, null, geojson);
+
+
+
+var basemaps = {
+    "Strava 2014": strava14
+};
+/*
+var overlays = {
+//    "Strava 2014 Nodes": null
+};
+*/
+L.control.layers(basemaps).addTo(map);
+
+
+//Add search tool
+L.mapbox.geocoderControl('mapbox.places', {
+  autocomplete: true,
+  bbox: [-88.25432,41.47461,-87.52773,42.15048]
+}).addTo(map);
+
 // adjust mapview based on geoJson
 //map.fitBounds(strava2014.getBounds());
 
@@ -52,8 +81,9 @@ var myLayer = $.getJSON('data/yr2014_strava.geojson', function(data){
   myLayer.on('mouseout', function(e) {
     e.layer.closePopup();
   });
-*/  
+*/
 
+//Add legend
 var legend = L.control({position: 'bottomright'});
 
 legend.onAdd = function (map) {
