@@ -35,35 +35,47 @@ L.mapbox.styleLayer('mapbox://styles/glw/cj09rk1cm00362rpfhkjxx7k0')
 //var hash = L.hash(map);
 
 //add strava trails 2014
-var fileurl = 'data/yr2014_strava.topojson'
+var trails14 = 'data/yr2014_strava.topojson';
+var trails15 = 'data/yr2015_strava.topojson';
 
-var geojson = new L.geoJson(null, {
+var geojson14 = new L.geoJson(null, {
   'style': style,
   onEachFeature: function (feature, layer) {
   layer.bindPopup('<strong>' + layer.feature.properties.osm_name + '</strong>' +
-  '</br>' + '2014 Total Pedestrian Count: ' + layer.feature.properties.total_athlete_ped + '</br>' + '2014 Total Rider Count: ' + layer.feature.properties.total_athlete_ride + '</br>' + '2014 Total Athelete Count: ' + layer.feature.properties.total_athlete_both, { closeButton: false });
+  '</br>' + 'Total Pedestrian Count: ' + layer.feature.properties.total_athlete_ped + '</br>' + 'Total Rider Count: ' + layer.feature.properties.total_athlete_ride + '</br>' + 'Total Count: ' + layer.feature.properties.total_athlete_both, { closeButton: false });
   }
 });
 
-var strava14 = omnivore.topojson(fileurl, null, geojson);
+var geojson15 = new L.geoJson(null, {
+  'style': style,
+  onEachFeature: function (feature, layer) {
+  layer.bindPopup('<strong>' + layer.feature.properties.osm_name + '</strong>' +
+  '</br>' + 'Total Pedestrian Count: ' + layer.feature.properties.total_athlete_ped + '</br>' + 'Total Rider Count: ' + layer.feature.properties.total_athlete_ride + '</br>' + 'Total Count: ' + layer.feature.properties.total_athlete_both, { closeButton: false });
+  }
+});
 
-
+var strava14 = omnivore.topojson(trails14, null, geojson14);
+var strava15 = omnivore.topojson(trails15, null, geojson15);
 
 var basemaps = {
-    "Strava 2014": strava14
+    "Strava 2014": strava14,
+    "Strava 2015": strava15
 };
 /*
 var overlays = {
 //    "Strava 2014 Nodes": null
 };
 */
-L.control.layers(basemaps).addTo(map);
+L.control.layers(basemaps, null,{
+  collapsed:false
+}).addTo(map);
 
 
 //Add search tool
 L.mapbox.geocoderControl('mapbox.places', {
   autocomplete: true,
-  bbox: [-88.25432,41.47461,-87.52773,42.15048]
+  bbox: [-88.25432,41.47461,-87.52773,42.15048],
+  collapsed: false
 }).addTo(map);
 
 // adjust mapview based on geoJson
